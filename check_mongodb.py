@@ -951,8 +951,13 @@ def check_database_size(con, database, warning, critical, perf_data):
         set_read_preference(con.admin)
         data = con[database].command('dbstats')
         storage_size = data['storageSize'] // 1024 // 1024
+        data_size = data['dataSize'] // 1024 // 1024
+        unused_space = storage_size - data_size
         if perf_data:
             perfdata += " | database_size=%i;%i;%i" % (storage_size, warning, critical)
+            perfdata += " | data_size=%i" % (data_size)
+            perfdata += " | unused_space=%i" % (unused_space)
+
             #perfdata += " database=%s" %(database)
 
         if storage_size >= critical:
